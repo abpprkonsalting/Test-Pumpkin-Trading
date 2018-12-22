@@ -10,40 +10,36 @@ namespace PumpkinTrade.Model
             Id = Guid.NewGuid();
             DatePlaced = DateTime.Now;
         }
-        public Order(decimal price): this()
+        public Order(decimal price, Guid clientId): this()
         {
             Price = price;
+            ClientId = clientId;
         }
         public Guid Id { get; }
-        public Guid? ComplementaryOrderId { get; private set; } = null;
+        public OrderTypes OrderType { get; protected set; }
+        public Order ComplementaryOrder { get; private set; } = null;
         public decimal Price { get; }
         public DateTime DatePlaced { get; }
-        public Guid? BuyerId { get; protected set; } = null;
-        public Guid? SellerId { get; protected set; } = null;
+        public Guid? ClientId { get; protected set; } = null;
+
         public State State { get; private set; } = State.Open;
 
         public void CloseOrder(Order complementaryOrder)
         {
-            if (BuyerId != null)
+            ComplementaryOrder = complementaryOrder;
+            ComplementaryOrder.ComplementaryOrder = this;
+            if (DatePlaced > complementaryOrder.DatePlaced)
             {
-                SellerId = complementaryOrder.SellerId;
-                if (DatePlaced > complementaryOrder.DatePlaced)
-                {
-                    State = State.ClosedAsPrimaryBuy;
-                    complementaryOrder.State = State.ClosedAsSecondary;
-                }
-            }    
+                ComplementaryOrder.State = State.ClosedAsSecondary;
+                if (OrderType == OrderTypes.Buy) State = State.ClosedAsPrimaryBuy;
+                else State = State.ClosedAsPrimarySale;
+            }
             else
             {
-                BuyerId = complementaryOrder.BuyerId;
-                if (DatePlaced > complementaryOrder.DatePlaced)
-                {
-                    State = State.ClosedAsPrimarySale;
-                    complementaryOrder.State = State.ClosedAsSecondary;
-                }
+                State = State.ClosedAsSecondary;
+                if (ComplementaryOrder.OrderType == OrderTypes.Buy) ComplementaryOrder.State = State.ClosedAsPrimaryBuy;
+                else ComplementaryOrder.State = State.ClosedAsPrimarySale;
             }
-            ComplementaryOrderId = complementaryOrder.Id;
         }
-
     }
 }

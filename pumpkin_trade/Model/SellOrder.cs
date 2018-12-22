@@ -1,13 +1,14 @@
 ﻿using System;
 
+using PumpkinTrade.Infrastructure.Enums;
+
 namespace PumpkinTrade.Model
 {
     public class SellOrder: Order
     {
-        public SellOrder() { }
-        public SellOrder(decimal price,Guid clientId): base(price)
+        public SellOrder(decimal price,Guid clientId): base(price, clientId)
         {
-            SellerId = clientId;
+            OrderType = OrderTypes.Sale;
         }
     }
 }

@@ -37,8 +37,8 @@ namespace PumpkinTrade.Bll.Implementations
             var outPut = new List<String>();
             trades.ForEach(trade =>
             {
-                var seller = _clientsRepository.GetById((Guid)trade.SellerId);
-                var buyer = _clientsRepository.GetById((Guid)trade.BuyerId);
+                var buyer = trade.OrderType == OrderTypes.Buy ? _clientsRepository.GetById((Guid)trade.ClientId) : _clientsRepository.GetById((Guid)trade.ComplementaryOrder.ClientId);
+                var seller = trade.OrderType == OrderTypes.Sale ? _clientsRepository.GetById((Guid)trade.ClientId) : _clientsRepository.GetById((Guid)trade.ComplementaryOrder.ClientId);
                 outPut.Add(trade.State == State.ClosedAsPrimarySale ? seller.Name + " sold a pumpkin to " + buyer.Name + " for " + trade.Price + " Euros." :
                                                                buyer.Name + " bought a pumpkin from " + seller.Name + " for " + trade.Price + " Euros.");
             });

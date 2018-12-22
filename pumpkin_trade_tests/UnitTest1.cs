@@ -16,7 +16,7 @@ namespace pumpkin_trade_tests
             PumpkinManagement pumpkinManagement = new PumpkinManagement();
             Guid clientAId = pumpkinManagement.AddClient("A");
             Order newBuyOrder = pumpkinManagement.BuyPumpkin(25,clientAId);
-            Guid buyerId = (Guid)newBuyOrder.BuyerId;
+            Guid buyerId = (Guid)newBuyOrder.ClientId;
             decimal orderPrice = newBuyOrder.Price;
             Type t = typeof(Guid);
             Assert.IsInstanceOfType(buyerId,t, "wrong clientId type");
@@ -29,7 +29,7 @@ namespace pumpkin_trade_tests
             PumpkinManagement pumpkinManagement = new PumpkinManagement();
             Guid clientBId = pumpkinManagement.AddClient("B");
             Order newSellOrder = pumpkinManagement.SellPumpkin(25,clientBId);
-            Guid sellerId = (Guid) newSellOrder.SellerId;
+            Guid sellerId = (Guid) newSellOrder.ClientId;
             decimal orderPrice = newSellOrder.Price;
             Type t = typeof(Guid);
             Assert.IsInstanceOfType(sellerId, t, "wrong clientId type");
@@ -45,9 +45,9 @@ namespace pumpkin_trade_tests
             Order newBuyOrder = pumpkinManagement.BuyPumpkin(25,clientAId);
             Order newSellOrder = pumpkinManagement.SellPumpkin(25,clientBId);
             var buyOrderId = newBuyOrder.Id;
-            var buyOrderComplementaryOrderId = newBuyOrder.ComplementaryOrderId;
+            var buyOrderComplementaryOrderId = newBuyOrder.ComplementaryOrder.Id;
             var sellOrderId = newSellOrder.Id;
-            var sellOrderComplementaryOrderId = newSellOrder.ComplementaryOrderId;
+            var sellOrderComplementaryOrderId = newSellOrder.ComplementaryOrder.Id;
             Assert.AreEqual(buyOrderId, sellOrderComplementaryOrderId, "sellOrder not complementary to buyOrder");
             Assert.AreEqual(sellOrderId, buyOrderComplementaryOrderId, "buyOrder not complementary to sellOrder");
 
@@ -74,15 +74,15 @@ namespace pumpkin_trade_tests
 
             var finalReport = pumpkinManagement.GetTrades();
 
-            Assert.AreEqual(clientDOrder.ComplementaryOrderId, clientBOrder.Id, "clientBOrder not complementary to ClientDOrder");
+            Assert.AreEqual(clientDOrder.ComplementaryOrder.Id, clientBOrder.Id, "clientBOrder not complementary to ClientDOrder");
             Assert.AreEqual(clientDOrder.State, State.ClosedAsPrimarySale, "clientDOrder not marked as sold");
             Assert.AreEqual("D sold a pumpkin to B for 9 Euros.", finalReport[0], "wrong report for sale of D");
 
-            Assert.AreEqual(clientFOrder.ComplementaryOrderId, clientAOrder.Id, "clientFOrder not complementary to ClientAOrder");
+            Assert.AreEqual(clientFOrder.ComplementaryOrder.Id, clientAOrder.Id, "clientFOrder not complementary to ClientAOrder");
             Assert.AreEqual(clientFOrder.State, State.ClosedAsPrimarySale, "clientFOrder not marked as sold");
             Assert.AreEqual("F sold a pumpkin to A for 10 Euros.", finalReport[1], "wrong report for sale of F");
 
-            Assert.AreEqual(clientGOrder.ComplementaryOrderId, clientCOrder.Id, "clientGOrder not complementary to ClientCOrder");
+            Assert.AreEqual(clientGOrder.ComplementaryOrder.Id, clientCOrder.Id, "clientGOrder not complementary to ClientCOrder");
             Assert.AreEqual(clientGOrder.State, State.ClosedAsPrimaryBuy, "clientGOrder not marked as bought");
             Assert.AreEqual("G bought a pumpkin from C for 100 Euros.", finalReport[2], "wrong report for bought of G");
         }
