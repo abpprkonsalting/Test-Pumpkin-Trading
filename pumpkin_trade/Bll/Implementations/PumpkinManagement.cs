@@ -39,7 +39,7 @@ namespace PumpkinTrade.Bll.Implementations
             {
                 var seller = _clientsRepository.GetById((Guid)trade.SellerId);
                 var buyer = _clientsRepository.GetById((Guid)trade.BuyerId);
-                outPut.Add(trade.State == State.Sale ? seller.Name + " sold a pumpkin to " + buyer.Name + " for " + trade.Price + " Euros." :
+                outPut.Add(trade.State == State.ClosedAsPrimarySale ? seller.Name + " sold a pumpkin to " + buyer.Name + " for " + trade.Price + " Euros." :
                                                                buyer.Name + " bought a pumpkin from " + seller.Name + " for " + trade.Price + " Euros.");
             });
             return outPut;

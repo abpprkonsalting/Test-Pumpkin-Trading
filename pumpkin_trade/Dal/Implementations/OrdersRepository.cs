@@ -31,13 +31,12 @@ namespace PumpkinTrade.Dal.Implementations
 
         public List<Order> GetTrades()
         {
-            return Orders.Where(ord => ord.State == State.Buy || ord.State == State.Sale).OrderBy(ord => ord.DatePlaced).ToList();
+            return Orders.Where(ord => ord.State == State.ClosedAsPrimaryBuy || ord.State == State.ClosedAsPrimarySale).OrderBy(ord => ord.DatePlaced).ToList();
         }
 
         private Order GetBestMatchingOrderByPriceAndDate(Order order, Criteria criteria)
         {
-            var notClosedOrders = Orders.FindAll(ord => ord.Id != order.Id &&
-                                                        ord.ComplementaryOrderId == null).ToList();
+            var notClosedOrders = Orders.FindAll(ord => ord.Id != order.Id && ord.State == State.Open).ToList();
             if (!notClosedOrders.Any()) return order;
             var qualifyingOrders = order.SellerId != null ? notClosedOrders.Where(ord => ord.BuyerId != null && 
                                                                                         ord.Price >= order.Price).OrderBy(ord => ord.Price).ToList() :
@@ -59,7 +58,7 @@ namespace PumpkinTrade.Dal.Implementations
             }
             selected.CloseOrder(order);
             order.CloseOrder(selected);
-            if (selected.State == State.Buy || selected.State == State.Sale) return selected;
+            if (selected.State != State.ClosedAsSecondary) return selected;
             else return order;
         }
     }

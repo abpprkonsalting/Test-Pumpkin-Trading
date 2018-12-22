@@ -3,9 +3,9 @@ namespace PumpkinTrade.Infrastructure.Enums
 {
     public enum State
     {
-        NoTradeYet = 0,
-        Traded = 1,
-        Sale = 2,
-        Buy = 3
+        Open = 0,
+        ClosedAsSecondary = 1,
+        ClosedAsPrimarySale = 2,
+        ClosedAsPrimaryBuy = 3
     }
 }

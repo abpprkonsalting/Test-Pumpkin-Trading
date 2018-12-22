@@ -20,7 +20,7 @@ namespace PumpkinTrade.Model
         public DateTime DatePlaced { get; }
         public Guid? BuyerId { get; protected set; } = null;
         public Guid? SellerId { get; protected set; } = null;
-        public State State { get; private set; } = State.NoTradeYet;
+        public State State { get; private set; } = State.Open;
 
         public void CloseOrder(Order complementaryOrder)
         {
@@ -29,8 +29,8 @@ namespace PumpkinTrade.Model
                 SellerId = complementaryOrder.SellerId;
                 if (DatePlaced > complementaryOrder.DatePlaced)
                 {
-                    State = State.Buy;
-                    complementaryOrder.State = State.Traded;
+                    State = State.ClosedAsPrimaryBuy;
+                    complementaryOrder.State = State.ClosedAsSecondary;
                 }
             }    
             else
@@ -38,8 +38,8 @@ namespace PumpkinTrade.Model
                 BuyerId = complementaryOrder.BuyerId;
                 if (DatePlaced > complementaryOrder.DatePlaced)
                 {
-                    State = State.Sale;
-                    complementaryOrder.State = State.Traded;
+                    State = State.ClosedAsPrimarySale;
+                    complementaryOrder.State = State.ClosedAsSecondary;
                 }
             }
             ComplementaryOrderId = complementaryOrder.Id;

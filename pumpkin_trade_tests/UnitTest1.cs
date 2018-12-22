@@ -75,15 +75,15 @@ namespace pumpkin_trade_tests
             var finalReport = pumpkinManagement.GetTrades();
 
             Assert.AreEqual(clientDOrder.ComplementaryOrderId, clientBOrder.Id, "clientBOrder not complementary to ClientDOrder");
-            Assert.AreEqual(clientDOrder.State, State.Sale, "clientDOrder not marked as sold");
+            Assert.AreEqual(clientDOrder.State, State.ClosedAsPrimarySale, "clientDOrder not marked as sold");
             Assert.AreEqual("D sold a pumpkin to B for 9 Euros.", finalReport[0], "wrong report for sale of D");
 
             Assert.AreEqual(clientFOrder.ComplementaryOrderId, clientAOrder.Id, "clientFOrder not complementary to ClientAOrder");
-            Assert.AreEqual(clientFOrder.State, State.Sale, "clientFOrder not marked as sold");
+            Assert.AreEqual(clientFOrder.State, State.ClosedAsPrimarySale, "clientFOrder not marked as sold");
             Assert.AreEqual("F sold a pumpkin to A for 10 Euros.", finalReport[1], "wrong report for sale of F");
 
             Assert.AreEqual(clientGOrder.ComplementaryOrderId, clientCOrder.Id, "clientGOrder not complementary to ClientCOrder");
-            Assert.AreEqual(clientGOrder.State, State.Buy, "clientGOrder not marked as bought");
+            Assert.AreEqual(clientGOrder.State, State.ClosedAsPrimaryBuy, "clientGOrder not marked as bought");
             Assert.AreEqual("G bought a pumpkin from C for 100 Euros.", finalReport[2], "wrong report for bought of G");
         }
     }
