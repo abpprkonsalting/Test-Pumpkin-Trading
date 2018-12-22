@@ -8,25 +8,31 @@ namespace PumpkinTrade.Dal.Implementations
     public class ClientsRepository
     {
         private List<Client> Clients;
+        private readonly object ClientsLock = new object();
 
         public ClientsRepository()
         {
+            Clients = new List<Client>();
             Clients.Add(new Client("Default Client"));
         }
-        public void Add(String name)
+        public Guid Add(String name)
         {
-            Clients.Add(new Client(name));
+            lock (ClientsLock)
+            {
+                Client newClient = new Client(name);
+                Clients.Add(newClient);
+                return newClient.Id;
+            }
         }
 
-        public Client GetById (uint id)
+        public Client GetById (Guid id)
         {
-            return Clients[(int)id];
+            return Clients.Find(client => client.Id == id);
         }
 
-        public bool Exist (uint id)
+        public bool Exist (Guid id)
         {
-            if (id <= Clients.Count - 1) return true;
-            else return false;
+            return Clients.Exists(client => client.Id == id);
         }
     }
 }

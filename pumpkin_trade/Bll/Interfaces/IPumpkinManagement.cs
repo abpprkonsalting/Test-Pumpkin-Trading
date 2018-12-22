@@ -7,8 +7,8 @@ namespace PumpkinTrade.Bll.Interfaces
 {
     interface IPumpkinManagement
     {
-        Order SellPumpkin(decimal price, uint clientId);
-        Order BuyPumpkin(decimal price, uint clientId);
+        Order SellPumpkin(decimal price, Guid clientId);
+        Order BuyPumpkin(decimal price, Guid clientId);
         List<String> GetTrades();
 
     }

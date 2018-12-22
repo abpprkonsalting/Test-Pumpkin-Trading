@@ -18,21 +18,29 @@ namespace PumpkinTrade.Model
         public Guid? ComplementaryOrderId { get; private set; } = null;
         public decimal Price { get; }
         public DateTime DatePlaced { get; }
-        public uint? BuyerId { get; protected set; } = null;
-        public uint? SellerId { get; protected set; } = null;
-        public TradeType TradeType { get; private set; } = TradeType.NoTrade;
+        public Guid? BuyerId { get; protected set; } = null;
+        public Guid? SellerId { get; protected set; } = null;
+        public State State { get; private set; } = State.NoTradeYet;
 
         public void CloseOrder(Order complementaryOrder)
         {
             if (BuyerId != null)
             {
                 SellerId = complementaryOrder.SellerId;
-                if (DatePlaced > complementaryOrder.DatePlaced) TradeType = TradeType.Bought;
+                if (DatePlaced > complementaryOrder.DatePlaced)
+                {
+                    State = State.Buy;
+                    complementaryOrder.State = State.Traded;
+                }
             }    
             else
             {
                 BuyerId = complementaryOrder.BuyerId;
-                if (DatePlaced > complementaryOrder.DatePlaced) TradeType = TradeType.Sold;
+                if (DatePlaced > complementaryOrder.DatePlaced)
+                {
+                    State = State.Sale;
+                    complementaryOrder.State = State.Traded;
+                }
             }
             ComplementaryOrderId = complementaryOrder.Id;
         }

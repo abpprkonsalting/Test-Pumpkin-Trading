@@ -12,6 +12,10 @@ namespace PumpkinTrade.Dal.Implementations
         private List<Order> Orders;
         private readonly object OrdersLock = new object();
 
+        public OrdersRepository()
+        {
+            Orders = new List<Order>();
+        }
         public Order Add(Order order)
         {
             lock (OrdersLock)
@@ -27,26 +31,35 @@ namespace PumpkinTrade.Dal.Implementations
 
         public List<Order> GetTrades()
         {
-            return Orders.Where(ord => ord.TradeType != TradeType.NoTrade).OrderBy(ord => ord.DatePlaced).ToList();
+            return Orders.Where(ord => ord.State == State.Buy || ord.State == State.Sale).OrderBy(ord => ord.DatePlaced).ToList();
         }
 
         private Order GetBestMatchingOrderByPriceAndDate(Order order, Criteria criteria)
         {
             var notClosedOrders = Orders.FindAll(ord => ord.Id != order.Id &&
-                                                        ord.TradeType == TradeType.NoTrade).ToList();
-            if (!notClosedOrders.Any()) return null;
+                                                        ord.ComplementaryOrderId == null).ToList();
+            if (!notClosedOrders.Any()) return order;
             var qualifyingOrders = order.SellerId != null ? notClosedOrders.Where(ord => ord.BuyerId != null && 
                                                                                         ord.Price >= order.Price).OrderBy(ord => ord.Price).ToList() :
                                                         notClosedOrders.Where(ord => ord.SellerId != null &&
                                                                                         ord.Price < order.Price).OrderByDescending(ord => ord.Price).ToList();
-            if (!qualifyingOrders.Any()) return null;
+            if (!qualifyingOrders.Any()) return order;
             var groupedByPrice = qualifyingOrders.GroupBy(ord => ord.Price);
-            var matchingGroup = groupedByPrice.SelectMany(elem => elem.Where(a => a.Price == elem.Max(c => c.Price)));
-            var orderedByDate = matchingGroup.OrderBy(ord => ord.DatePlaced);
-            var selected = orderedByDate.First();
+            var groupsOrderedByPrice = order.SellerId != null ? groupedByPrice.OrderBy(group => group.Key) : groupedByPrice.OrderByDescending(group => group.Key);
+            var matchingGroup = groupsOrderedByPrice.Last();
+            Order selected = null;
+            if (matchingGroup.Count() > 1)
+            {
+                var orderedByDate = matchingGroup.OrderBy(ord => ord.DatePlaced);
+                selected = orderedByDate.First();
+            }
+            else
+            {
+                selected = matchingGroup.First();
+            }
             selected.CloseOrder(order);
             order.CloseOrder(selected);
-            if (selected.TradeType != TradeType.NoTrade) return selected;
+            if (selected.State == State.Buy || selected.State == State.Sale) return selected;
             else return order;
         }
     }
