@@ -10,6 +10,6 @@ namespace PumpkinTrade.Bll.Interfaces
         Order SellPumpkin(decimal price, Guid clientId);
         Order BuyPumpkin(decimal price, Guid clientId);
         List<String> GetTrades();
-
+        Guid AddClient(String name);
     }
 }
