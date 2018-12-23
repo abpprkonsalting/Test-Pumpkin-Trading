@@ -27,6 +27,7 @@ Methods of Orders repo:
   Public ones:
   
    Add.
+   
    Get Trades.
     
   Private:
