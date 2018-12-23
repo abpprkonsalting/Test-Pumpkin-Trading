@@ -26,12 +26,12 @@ Methods of Orders repo:
 
   Public ones:
   
-    - Add.
-    - Get Trades.
+   Add.
+   Gfetf Trades.
     
   Private:
   
-    - GetBestMatchingOrderByPriceAndDate: This method is called after an Order is placed, and what it does is to filter the collection of Orders and selecting the apropiate one to match the placed order. If there is a match, then both orders are closed and linked, if not, the order remains in open state.
+  GetBestMatchingOrderByPriceAndDate: This method is called after an Order is placed, and what it does is to filter the collection of Orders and selecting the apropiate one to match the placed order. If there is a match, then both orders are closed and linked, if not, the order remains in open state.
  
 Any order can have one of 4 states: Open, ClosedAsSecondary, ClosedAsPrimarySale, ClosedAsPrimaryBuy.
 
@@ -41,30 +41,30 @@ In any case, an order is never removed from the repo because the "GetTrades" met
 
 The interaction with the library is done in the Bll, where exist the three requested methods in the task description:
 
-- SellPumpkin: used by the client to place a sale order. If there is not a corresponding buy order that match the sale, then the return value is the own "sale order" without been closed. If there was a match, then the return value is the corresponding buy order, in this case closed. Access to the original ìsale orderî remains possible because both orders are linked throught their respectives ìComplementaryOrderî fields; i.e.: The ComplementaryOrder field of the ìsale orderî is the corresponding ìbuy orderî, and viceversa. 
+- SellPumpkin: used by the client to place a sale order. If there is not a corresponding buy order that match the sale, then the return value is the own "sale order" without been closed. If there was a match, then the return value is the corresponding buy order, in this case closed. Access to the original ‚Äúsale order‚Äù remains possible because both orders are linked throught their respectives ‚ÄúComplementaryOrder‚Äù fields; i.e.: The ComplementaryOrder field of the ‚Äúsale order‚Äù is the corresponding ‚Äúbuy order‚Äù, and viceversa. 
   
 - BuyPumpkin: The same logic that SellPumpkin but opposite.
 
-- GetTrades return a collection of the closed trade operations in human readable format. A trade operation, as concept, is composed by both orders (the sale and itís corresponding buy), but the way of characterizing the operation as a sale/buy is to select the last order of the pair placed. The other one remains in the collection but marked otherwise as ìsecondaryî. 
+- GetTrades return a collection of the closed trade operations in human readable format. A trade operation, as concept, is composed by both orders (the sale and it‚Äôs corresponding buy), but the way of characterizing the operation as a sale/buy is to select the last order of the pair placed. The other one remains in the collection but marked otherwise as ‚Äúsecondary‚Äù. 
 
 Finally there is an accessory method for adding clients.
 
 The solution contains a project with the unit tests, named "pumpkin_trade_tests". All the test cases proposed in the task description
 are covered and run succesfully.
 
-The thread safety is guaranteed by the use of locks each time the collections in the repos are accessed. As every operation returns always with a result, and keep all orders in a defined state, blocking the access to the collection is enough. Any concurrent operation that could take place meanwhile there is one of theme in course, will have to wait until this last one finish. That means that any operation will always take place with all orders in a safe state.
+The thread safety is guaranteed by the use of locks each time the collections in the repos are accessed. As every operation returns always with a result, and keep all orders in a defined state, blocking the access to the collection is enough. Any concurrent operation that could take place meanwhile there is one of them in course, will have to wait until this last one finish. That means that any operation will always take place with all orders in a safe state.
 
 Component state is protected from illegal modifications by the use of encapsulation in the model and only exposing the methods for adding orders and getting the report.
 
-Adding a parameter for amount of pumpkins could be achieved adding a field "quantity" to the order and changing the logic for matching orders; but here could be two cases:
+Adding a parameter for amount of pumpkins could be achieved adding a field "quantity" to the order and changing the logic for matching orders; but here there could be two cases:
 
 1- A buy/sale order for more than a pumpking could be satisfied by several sale/buy orders that summed all together match the proposed price by the established rules.
 
-  This case is the more complex one, and it's implementation would requiere the use of logic not only based on filtering in the repository methods. In fact, it could imply different approaches to the logic of matching orders.
+  This case is the more complex one, and it's implementation would requiere the use of logic not only based on methods that filter in the repository. In fact, it could imply different approaches to the logic of matching orders.
 
-2- A buy/sale order for more than a pumpking could be satisfied only by a sale/buy order that match exactly the same amount.
+2- A buy/sale order for more than one pumpking could be satisfied only by a sale/buy order that match exactly the same amount of pumkings.
 
-  This case is simpler, but less real. It would only need to add to the filters this new parameter.
+  This case is simpler, but less real. It would only need to add to the filters this new parameter for amount of pumpkings.
   
 Expiration time for the order could be implemented including in the filter of qualifiedOrders (OrdersRepository.cs line 41) a condition to exclude the orders that exceed an established timespan (it could be done too in line 39, but conceptually it is better in 41. The first filter is for selecting the opened orders).
 
