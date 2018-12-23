@@ -27,7 +27,7 @@ Methods of Orders repo:
   Public ones:
   
    Add.
-   Gfetf Trades.
+   Get Trades.
     
   Private:
   
